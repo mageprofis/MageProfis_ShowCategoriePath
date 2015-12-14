@@ -41,7 +41,8 @@ extends Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Categories
                 return $this->_categoriePathes;
             }
             $collection = Mage::getResourceModel('catalog/category_collection');
-            $collection->addFieldToFilter('entity_id', array('in' => $categoryIds));
+            $collection->addFieldToSelect(array('path'))
+                    ->addFieldToFilter('entity_id', array('in' => $categoryIds));
 
             $ids = array();
             foreach ($collection as $item) {
