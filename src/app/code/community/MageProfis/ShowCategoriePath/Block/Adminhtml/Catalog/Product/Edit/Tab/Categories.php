@@ -27,8 +27,7 @@ extends Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Categories
     }
 
     /**
-     * just run this model one time
-     * @see getSelectedCategoriesPathIds
+     * get All Parent Categorie Ids
      * 
      * @return array
      */
@@ -36,7 +35,24 @@ extends Mage_Adminhtml_Block_Catalog_Product_Edit_Tab_Categories
     {
         if (is_null($this->_categoriePathes))
         {
-            $this->_categoriePathes = $this->getSelectedCategoriesPathIds();
+            $categoryIds = $this->getCategoryIds();
+            if (empty($categoryIds)) {
+                $this->_categoriePathes = array();
+                return $this->_categoriePathes;
+            }
+            $collection = Mage::getResourceModel('catalog/category_collection');
+            $collection->addFieldToFilter('entity_id', array('in' => $categoryIds));
+
+            $ids = array();
+            foreach ($collection as $item) {
+                $_ids = $item->getPathIds();
+                // remove the first and the last one from array
+                array_shift($_ids);
+                array_pop($_ids);
+                $ids = array_merge($ids, $_ids);
+            }
+            $ids = array_unique($ids);
+            $this->_categoriePathes = $ids;
         }
         return $this->_categoriePathes;
     }
